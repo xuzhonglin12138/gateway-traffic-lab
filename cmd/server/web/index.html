@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gateway Traffic Lab</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Rainbond Gateway Monitor Test App</p>
+          <h1>Gateway Traffic Lab</h1>
+        </div>
+        <div class="status-pill" id="runState">Idle</div>
+      </header>
+
+      <section class="layout">
+        <div class="panel controls">
+          <div class="section-head">
+            <h2>Traffic Scenarios</h2>
+            <button id="stopBtn" class="ghost" type="button">Stop</button>
+          </div>
+
+          <div class="scenario-grid">
+            <button class="scenario" data-scenario="normal" type="button">
+              <strong>Normal</strong>
+              <span>50 fast 200 requests</span>
+            </button>
+            <button class="scenario" data-scenario="slow" type="button">
+              <strong>Slow</strong>
+              <span>20 requests with 1200 ms latency</span>
+            </button>
+            <button class="scenario" data-scenario="error" type="button">
+              <strong>Error</strong>
+              <span>30 upstream 500 responses</span>
+            </button>
+            <button class="scenario" data-scenario="mixed" type="button">
+              <strong>Mixed</strong>
+              <span>100 random requests, 25% errors</span>
+            </button>
+          </div>
+
+          <form id="trafficForm" class="form">
+            <label>
+              Path
+              <select id="path">
+                <option value="/api/ping">/api/ping</option>
+                <option value="/api/delay">/api/delay</option>
+                <option value="/api/random">/api/random</option>
+                <option value="/api/error">/api/error</option>
+                <option value="/api/user/setting/42">/api/user/setting/42</option>
+                <option value="/api/order/detail/99">/api/order/detail/99</option>
+                <option value="/api/report/list">/api/report/list</option>
+                <option value="/api/echo">/api/echo</option>
+              </select>
+            </label>
+
+            <label>
+              Method
+              <select id="method">
+                <option>GET</option>
+                <option>POST</option>
+                <option>PUT</option>
+                <option>DELETE</option>
+              </select>
+            </label>
+
+            <label>
+              Count
+              <input id="count" type="number" min="1" max="1000" value="20" />
+            </label>
+
+            <label>
+              Concurrency
+              <input id="concurrency" type="number" min="1" max="50" value="5" />
+            </label>
+
+            <label>
+              Delay ms
+              <input id="delayMs" type="number" min="0" max="30000" value="100" />
+            </label>
+
+            <label>
+              Status
+              <input id="status" type="number" min="200" max="599" value="200" />
+            </label>
+
+            <label>
+              Error rate %
+              <input id="errorRate" type="number" min="0" max="100" value="0" />
+            </label>
+
+            <label>
+              Payload bytes
+              <input id="payloadBytes" type="number" min="0" max="1048576" value="0" />
+            </label>
+
+            <button class="primary" type="submit">Start Requests</button>
+          </form>
+        </div>
+
+        <div class="panel results">
+          <div class="section-head">
+            <h2>Run Summary</h2>
+            <button id="clearBtn" class="ghost" type="button">Clear</button>
+          </div>
+
+          <div class="metrics">
+            <div><span id="sent">0</span><small>Sent</small></div>
+            <div><span id="success">0</span><small>2xx-3xx</small></div>
+            <div><span id="failed">0</span><small>4xx-5xx</small></div>
+            <div><span id="avg">0 ms</span><small>Avg latency</small></div>
+          </div>
+
+          <div class="progress">
+            <div id="progressBar"></div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Method</th>
+                  <th>Path</th>
+                  <th>Status</th>
+                  <th>Client Time</th>
+                  <th>Server Delay</th>
+                </tr>
+              </thead>
+              <tbody id="logRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script src="/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,16 @@
+name: gateway-traffic-lab
+description: Click-driven traffic generator for Rainbond gateway monitoring tests.
+component:
+  language: go
+  port: 8080
+  healthCheck:
+    path: /healthz
+    initialDelaySeconds: 5
+    periodSeconds: 10
+  env:
+    PORT: "8080"
+gateway:
+  recommended:
+    protocol: HTTP
+    path: /
+    port: 8080
