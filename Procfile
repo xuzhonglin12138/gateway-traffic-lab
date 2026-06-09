@@ -1,1 +1,1 @@
-web: ./gateway-traffic-lab
+web: server

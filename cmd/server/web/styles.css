@@ -9,6 +9,7 @@
   --green: #0f8a5f;
   --red: #c43b3b;
   --amber: #a56500;
+  --soft-blue: #eef4ff;
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
@@ -29,8 +30,12 @@ select {
   font: inherit;
 }
 
+button {
+  touch-action: manipulation;
+}
+
 .app {
-  max-width: 1280px;
+  max-width: 1320px;
   margin: 0 auto;
   padding: 28px;
 }
@@ -48,7 +53,6 @@ select {
   color: var(--muted);
   font-size: 13px;
   font-weight: 700;
-  text-transform: uppercase;
 }
 
 h1,
@@ -58,7 +62,8 @@ h2 {
 }
 
 h1 {
-  font-size: 34px;
+  font-size: 32px;
+  line-height: 1.2;
 }
 
 h2 {
@@ -70,7 +75,7 @@ h2 {
   padding: 8px 12px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: #eef4ff;
+  background: var(--soft-blue);
   color: var(--blue);
   text-align: center;
   font-weight: 700;
@@ -78,7 +83,7 @@ h2 {
 
 .layout {
   display: grid;
-  grid-template-columns: minmax(360px, 420px) minmax(0, 1fr);
+  grid-template-columns: minmax(380px, 460px) minmax(0, 1fr);
   gap: 18px;
 }
 
@@ -98,16 +103,28 @@ h2 {
   margin-bottom: 14px;
 }
 
+.section-head.compact {
+  margin-top: 18px;
+  margin-bottom: 10px;
+}
+
+.mode-grid,
 .scenario-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
   gap: 10px;
+}
+
+.mode-grid {
+  grid-template-columns: 1fr;
+}
+
+.scenario-grid {
+  grid-template-columns: 1fr 1fr;
   margin-bottom: 18px;
 }
 
+.mode-card,
 .scenario {
-  min-height: 86px;
-  padding: 12px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: #fbfcfe;
@@ -116,20 +133,55 @@ h2 {
   cursor: pointer;
 }
 
+.mode-card {
+  min-height: 74px;
+  padding: 12px 14px;
+}
+
+.scenario {
+  min-height: 76px;
+  padding: 12px;
+}
+
+.mode-card:hover,
 .scenario:hover {
   border-color: var(--blue);
 }
 
+.mode-card.active {
+  border-color: var(--blue);
+  background: var(--soft-blue);
+}
+
+.mode-card strong,
+.mode-card span,
 .scenario strong,
 .scenario span {
   display: block;
 }
 
+.mode-card span,
 .scenario span {
   margin-top: 6px;
   color: var(--muted);
   font-size: 12px;
   line-height: 1.35;
+}
+
+.mode-help,
+.notice {
+  margin: 12px 0 0;
+  border: 1px solid #f0d79a;
+  border-radius: 8px;
+  background: #fff8e7;
+  color: var(--amber);
+  padding: 10px 12px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.notice {
+  margin: 0 0 14px;
 }
 
 .form {
@@ -138,7 +190,8 @@ h2 {
   gap: 12px;
 }
 
-.form label:first-child {
+.form label:nth-child(1),
+.form label:nth-child(2) {
   grid-column: 1 / -1;
 }
 
@@ -183,9 +236,14 @@ select {
   padding: 0 12px;
 }
 
+.ghost.danger {
+  color: var(--red);
+  border-color: #efc2c2;
+}
+
 .metrics {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
   margin-bottom: 12px;
 }
@@ -204,8 +262,11 @@ select {
 }
 
 .metrics span {
-  font-size: 24px;
+  min-height: 30px;
+  font-size: 22px;
   font-weight: 800;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
 }
 
 .metrics small {
@@ -213,12 +274,19 @@ select {
   color: var(--muted);
 }
 
+.progress-line {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
 .progress {
+  flex: 1;
   height: 10px;
   border-radius: 999px;
   background: #e7edf5;
   overflow: hidden;
-  margin-bottom: 14px;
 }
 
 #progressBar {
@@ -226,6 +294,13 @@ select {
   height: 100%;
   background: var(--green);
   transition: width 160ms ease;
+}
+
+#progressText {
+  min-width: 112px;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: right;
 }
 
 .table-wrap {
@@ -267,28 +342,49 @@ th {
   font-weight: 800;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 980px) {
   .app {
     padding: 18px;
   }
 
-  .topbar,
   .layout {
-    display: block;
-  }
-
-  .status-pill {
-    margin-top: 14px;
-    width: 100%;
-  }
-
-  .results {
-    margin-top: 16px;
-  }
-
-  .metrics,
-  .scenario-grid,
-  .form {
     grid-template-columns: 1fr;
+  }
+
+  .metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .topbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  h1 {
+    font-size: 26px;
+  }
+
+  .scenario-grid,
+  .form,
+  .metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .form label:nth-child(1),
+  .form label:nth-child(2) {
+    grid-column: auto;
+  }
+
+  .progress-line {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  #progressText {
+    min-width: 0;
+    text-align: left;
   }
 }
