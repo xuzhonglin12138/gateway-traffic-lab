@@ -19,75 +19,35 @@
       <section class="layout">
         <div class="panel controls">
           <div class="section-head">
-            <h2>请求层级</h2>
+            <h2>测试配置</h2>
             <button id="stopBtn" class="ghost danger" type="button">停止</button>
           </div>
 
-          <div class="mode-grid">
-            <button class="mode-card active" data-mode="normal" type="button">
-              <strong>普通请求</strong>
-              <span>低并发、有限次数，用于验证网关采集是否正常。</span>
+          <div class="tabs" role="tablist" aria-label="测试类型">
+            <button class="tab active" data-mode="normal" type="button" role="tab" aria-selected="true">
+              普通测试
             </button>
-            <button class="mode-card" data-mode="continuous" type="button">
-              <strong>持续请求</strong>
-              <span>持续发送直到手动停止，用于观察监控曲线。</span>
+            <button class="tab" data-mode="stress" type="button" role="tab" aria-selected="false">
+              压力测试
             </button>
-            <button class="mode-card" data-mode="stress" type="button">
-              <strong>压力测试请求</strong>
-              <span>高并发批量请求，用于观察吞吐、延迟和错误率。</span>
+            <button class="tab" data-mode="continuous" type="button" role="tab" aria-selected="false">
+              持续测试
             </button>
           </div>
 
           <p class="mode-help" id="modeHelp">适合验证网关路径、状态码和延迟采集。</p>
 
-          <div class="section-head compact">
-            <h2>快速预设</h2>
-          </div>
-
-          <div class="scenario-grid">
-            <button class="scenario" data-scenario="fast" type="button">
-              <strong>快速成功</strong>
-              <span>普通 200 请求</span>
-            </button>
-            <button class="scenario" data-scenario="slow" type="button">
-              <strong>慢请求</strong>
-              <span>模拟上游延迟</span>
-            </button>
-            <button class="scenario" data-scenario="error" type="button">
-              <strong>错误请求</strong>
-              <span>模拟 5xx 响应</span>
-            </button>
-            <button class="scenario" data-scenario="mixed" type="button">
-              <strong>持续混合</strong>
-              <span>随机延迟和错误率</span>
-            </button>
-            <button class="scenario" data-scenario="stress" type="button">
-              <strong>压力测试</strong>
-              <span>高并发随机请求</span>
-            </button>
-          </div>
-
           <form id="trafficForm" class="form">
             <label>
-              请求层级
-              <select id="mode">
-                <option value="normal">普通请求</option>
-                <option value="continuous">持续请求</option>
-                <option value="stress">压力测试请求</option>
-              </select>
-            </label>
-
-            <label>
-              请求路径
-              <select id="path">
-                <option value="/api/ping">/api/ping - 快速成功</option>
-                <option value="/api/delay">/api/delay - 固定延迟</option>
-                <option value="/api/random">/api/random - 随机延迟/错误</option>
-                <option value="/api/error">/api/error - 指定错误码</option>
-                <option value="/api/user/setting/42">/api/user/setting/42 - 用户设置</option>
-                <option value="/api/order/detail/99">/api/order/detail/99 - 订单详情</option>
-                <option value="/api/report/list">/api/report/list - 报表列表</option>
-                <option value="/api/echo">/api/echo - 回显请求</option>
+              目标类型
+              <select id="target">
+                <option value="ping">快速成功</option>
+                <option value="random">随机延迟/错误</option>
+                <option value="error">指定错误码</option>
+                <option value="user">用户设置分组</option>
+                <option value="order">订单详情分组</option>
+                <option value="report">报表列表分组</option>
+                <option value="echo">回显负载</option>
               </select>
             </label>
 
@@ -136,7 +96,8 @@
               <input id="payloadBytes" type="number" min="0" max="1048576" value="0" />
             </label>
 
-            <button class="primary" type="submit">开始发送</button>
+            <button id="singleBtn" class="primary" type="submit">发送当前路由</button>
+            <button id="mixedBtn" class="secondary" type="button">混合发送多路由</button>
           </form>
         </div>
 
@@ -173,6 +134,7 @@
                   <th>序号</th>
                   <th>方法</th>
                   <th>路径</th>
+                  <th>分组</th>
                   <th>状态</th>
                   <th>客户端耗时</th>
                   <th>服务端延迟</th>

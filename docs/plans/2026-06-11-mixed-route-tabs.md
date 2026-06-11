@@ -31,7 +31,7 @@ Add tests for:
 Run:
 
 ```bash
-node --test cmd/server/web/app.test.js
+node cmd/server/web/app.test.js
 ```
 
 Expected: fails because mixed route helpers and exports do not exist yet.
@@ -59,7 +59,7 @@ Implement:
 Run:
 
 ```bash
-node --test cmd/server/web/app.test.js
+node cmd/server/web/app.test.js
 ```
 
 Expected: pass.
@@ -93,7 +93,7 @@ Normal defaults should be conservative. Stress defaults should use higher count 
 Run:
 
 ```bash
-node --test cmd/server/web/app.test.js
+node cmd/server/web/app.test.js
 ```
 
 Expected: pass.
@@ -155,7 +155,7 @@ Document the three tabs, mixed multi-route sending, regex route pool, and the ru
 Run:
 
 ```bash
-node --test cmd/server/web/app.test.js
+node cmd/server/web/app.test.js
 go test ./...
 go build ./...
 go vet ./...

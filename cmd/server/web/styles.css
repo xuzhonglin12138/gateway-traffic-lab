@@ -108,64 +108,32 @@ h2 {
   margin-bottom: 10px;
 }
 
-.mode-grid,
-.scenario-grid {
+.tabs {
   display: grid;
-  gap: 10px;
-}
-
-.mode-grid {
-  grid-template-columns: 1fr;
-}
-
-.scenario-grid {
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
   margin-bottom: 18px;
 }
 
-.mode-card,
-.scenario {
+.tab {
+  min-height: 44px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 6px;
   background: #fbfcfe;
   color: var(--text);
-  text-align: left;
+  text-align: center;
   cursor: pointer;
+  font-weight: 800;
 }
 
-.mode-card {
-  min-height: 74px;
-  padding: 12px 14px;
-}
-
-.scenario {
-  min-height: 76px;
-  padding: 12px;
-}
-
-.mode-card:hover,
-.scenario:hover {
+.tab:hover {
   border-color: var(--blue);
 }
 
-.mode-card.active {
+.tab.active {
   border-color: var(--blue);
   background: var(--soft-blue);
-}
-
-.mode-card strong,
-.mode-card span,
-.scenario strong,
-.scenario span {
-  display: block;
-}
-
-.mode-card span,
-.scenario span {
-  margin-top: 6px;
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.35;
+  color: var(--blue);
 }
 
 .mode-help,
@@ -190,8 +158,7 @@ h2 {
   gap: 12px;
 }
 
-.form label:nth-child(1),
-.form label:nth-child(2) {
+.form label:nth-child(1) {
   grid-column: 1 / -1;
 }
 
@@ -215,6 +182,7 @@ select {
 }
 
 .primary,
+.secondary,
 .ghost {
   min-height: 40px;
   border-radius: 6px;
@@ -223,10 +191,15 @@ select {
 }
 
 .primary {
-  grid-column: 1 / -1;
   border: 0;
   background: var(--blue);
   color: #fff;
+}
+
+.secondary {
+  border: 1px solid #b7cfef;
+  background: var(--soft-blue);
+  color: var(--blue);
 }
 
 .ghost {
@@ -366,14 +339,13 @@ th {
     font-size: 26px;
   }
 
-  .scenario-grid,
+  .tabs,
   .form,
   .metrics {
     grid-template-columns: 1fr;
   }
 
-  .form label:nth-child(1),
-  .form label:nth-child(2) {
+  .form label:nth-child(1) {
     grid-column: auto;
   }
 

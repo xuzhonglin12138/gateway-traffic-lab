@@ -111,6 +111,38 @@ func TestGroupedRoutesReturnRouteInformation(t *testing.T) {
 	}
 }
 
+func TestRegexValidationRoutesReturnControlledResponses(t *testing.T) {
+	handler := NewHandler()
+	tests := []struct {
+		path  string
+		label string
+	}{
+		{path: "/api/payment/trade/20260611001?status=202&ms=1", label: "/api/payment/trade/*"},
+		{path: "/api/project/alpha/env/prod?status=203", label: "/api/project/*/env/*"},
+		{path: "/api/version/v2/apps/console?status=204", label: "/api/version/*/apps/*"},
+		{path: "/api/logs/service/worker/errors?status=205", label: "/api/logs/service/*"},
+		{path: "/api/files/docs/readme.pdf?status=206", label: "/api/files/*"},
+		{path: "/api/search/users?q=admin&status=207", label: "/api/search/users"},
+	}
+
+	for _, tt := range tests {
+		rec := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodGet, tt.path, nil)
+		handler.ServeHTTP(rec, req)
+
+		if rec.Code < 200 || rec.Code > 299 {
+			t.Fatalf("%s status = %d; want controlled 2xx response", tt.path, rec.Code)
+		}
+		body := decodeBody(t, rec)
+		if body["route_label"] != tt.label {
+			t.Fatalf("%s route_label = %v; want %s", tt.path, body["route_label"], tt.label)
+		}
+		if body["route"] != tt.label {
+			t.Fatalf("%s route = %v; want %s", tt.path, body["route"], tt.label)
+		}
+	}
+}
+
 func TestScenarioAcceptsJSONBody(t *testing.T) {
 	handler := NewHandler()
 	rec := httptest.NewRecorder()

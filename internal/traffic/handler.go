@@ -72,8 +72,20 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		h.handleGroupedRoute(w, r, "/api/user/setting/*")
 	case strings.HasPrefix(r.URL.Path, "/api/order/detail/"):
 		h.handleGroupedRoute(w, r, "/api/order/detail/*")
-	case r.URL.Path == "/api/report/list":
-		h.handleGroupedRoute(w, r, "/api/report/list")
+	case strings.HasPrefix(r.URL.Path, "/api/report/list"):
+		h.handleGroupedRoute(w, r, reportRouteLabel(r.URL.Path))
+	case strings.HasPrefix(r.URL.Path, "/api/payment/"):
+		h.handleGroupedRoute(w, r, paymentRouteLabel(r.URL.Path))
+	case strings.HasPrefix(r.URL.Path, "/api/project/"):
+		h.handleGroupedRoute(w, r, projectRouteLabel(r.URL.Path))
+	case strings.HasPrefix(r.URL.Path, "/api/version/"):
+		h.handleGroupedRoute(w, r, versionRouteLabel(r.URL.Path))
+	case strings.HasPrefix(r.URL.Path, "/api/logs/"):
+		h.handleGroupedRoute(w, r, logsRouteLabel(r.URL.Path))
+	case strings.HasPrefix(r.URL.Path, "/api/files/"):
+		h.handleGroupedRoute(w, r, "/api/files/*")
+	case strings.HasPrefix(r.URL.Path, "/api/search/"):
+		h.handleGroupedRoute(w, r, searchRouteLabel(r.URL.Path))
 	default:
 		writeJSON(w, http.StatusNotFound, Response{
 			OK:        false,
@@ -154,6 +166,50 @@ func (h *Handler) handleGroupedRoute(w http.ResponseWriter, r *http.Request, rou
 	delay := queryInt(r, "ms", 0, 0, defaultMaxDelayMS)
 	payloadBytes := queryInt(r, "payloadBytes", 0, 0, defaultMaxPayload)
 	h.writeControlled(w, r, routeLabel, status, delay, payloadBytes, routeLabel)
+}
+
+func reportRouteLabel(path string) string {
+	if path == "/api/report/list" {
+		return "/api/report/list"
+	}
+	return "/api/report/list/*"
+}
+
+func paymentRouteLabel(path string) string {
+	parts := strings.Split(strings.Trim(path, "/"), "/")
+	if len(parts) >= 3 {
+		return "/api/payment/" + parts[2] + "/*"
+	}
+	return "/api/payment/*"
+}
+
+func projectRouteLabel(path string) string {
+	if strings.Contains(path, "/env/") {
+		return "/api/project/*/env/*"
+	}
+	return "/api/project/*"
+}
+
+func versionRouteLabel(path string) string {
+	if strings.Contains(path, "/apps/") {
+		return "/api/version/*/apps/*"
+	}
+	return "/api/version/*"
+}
+
+func logsRouteLabel(path string) string {
+	if strings.HasPrefix(path, "/api/logs/service/") {
+		return "/api/logs/service/*"
+	}
+	return "/api/logs/*"
+}
+
+func searchRouteLabel(path string) string {
+	parts := strings.Split(strings.Trim(path, "/"), "/")
+	if len(parts) >= 3 {
+		return "/api/search/" + parts[2]
+	}
+	return "/api/search/*"
 }
 
 func (h *Handler) writeControlled(w http.ResponseWriter, r *http.Request, route string, status, delayMS, payloadBytes int, routeLabel string) {
