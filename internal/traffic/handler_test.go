@@ -143,6 +143,31 @@ func TestRegexValidationRoutesReturnControlledResponses(t *testing.T) {
 	}
 }
 
+func TestSLAProbeRoutesReturnControlledHealthStates(t *testing.T) {
+	handler := NewHandler()
+	tests := []struct {
+		path string
+		code int
+	}{
+		{path: "/sla/ok", code: http.StatusOK},
+		{path: "/sla/fail", code: http.StatusInternalServerError},
+		{path: "/sla/flaky?errorRate=100", code: http.StatusInternalServerError},
+	}
+
+	for _, tt := range tests {
+		rec := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodGet, tt.path, nil)
+		handler.ServeHTTP(rec, req)
+		if rec.Code != tt.code {
+			t.Fatalf("%s status = %d; want %d", tt.path, rec.Code, tt.code)
+		}
+		body := decodeBody(t, rec)
+		if body["route"] == "" {
+			t.Fatalf("%s response route is empty: %v", tt.path, body)
+		}
+	}
+}
+
 func TestScenarioAcceptsJSONBody(t *testing.T) {
 	handler := NewHandler()
 	rec := httptest.NewRecorder()

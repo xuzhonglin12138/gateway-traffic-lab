@@ -115,6 +115,11 @@ h2 {
   margin-bottom: 18px;
 }
 
+.sla-tabs {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-bottom: 10px;
+}
+
 .tab {
   min-height: 44px;
   border: 1px solid var(--line);
@@ -150,6 +155,35 @@ h2 {
 
 .notice {
   margin: 0 0 14px;
+}
+
+.sla-box {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #fbfcfe;
+}
+
+.sla-box small,
+.sla-box code {
+  display: block;
+}
+
+.sla-box small {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.sla-box code {
+  color: var(--blue);
+  font-size: 13px;
+  overflow-wrap: anywhere;
 }
 
 .form {

@@ -53,6 +53,20 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch {
 	case r.URL.Path == "/healthz":
 		writeText(w, http.StatusOK, "ok")
+	case r.URL.Path == "/sla/ok":
+		h.handleSLAProbe(w, r, http.StatusOK)
+	case r.URL.Path == "/sla/fail":
+		h.handleSLAProbe(w, r, http.StatusInternalServerError)
+	case r.URL.Path == "/sla/slow":
+		delay := queryInt(r, "ms", 3500, 0, defaultMaxDelayMS)
+		time.Sleep(time.Duration(delay) * time.Millisecond)
+		h.handleSLAProbe(w, r, http.StatusOK)
+	case r.URL.Path == "/sla/flaky":
+		status := http.StatusOK
+		if h.rand.Intn(100) < queryInt(r, "errorRate", 30, 0, 100) {
+			status = http.StatusInternalServerError
+		}
+		h.handleSLAProbe(w, r, status)
 	case r.URL.Path == "/api/ping":
 		h.writeControlled(w, r, r.URL.Path, defaultSuccessState, 0, 0, "")
 	case r.URL.Path == "/api/delay":
@@ -95,6 +109,16 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			Timestamp: nowString(),
 		})
 	}
+}
+
+func (h *Handler) handleSLAProbe(w http.ResponseWriter, r *http.Request, status int) {
+	writeJSON(w, status, Response{
+		OK:        status >= 200 && status < 400,
+		Route:     r.URL.Path,
+		Method:    r.Method,
+		Status:    status,
+		Timestamp: nowString(),
+	})
 }
 
 func (h *Handler) handleRandom(w http.ResponseWriter, r *http.Request) {

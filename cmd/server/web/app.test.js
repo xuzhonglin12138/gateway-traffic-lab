@@ -7,6 +7,7 @@ const {
   mixedRoutes,
   scenarios,
   selectRouteForRequest,
+  slaTargets,
 } = require('./app.js')
 
 function test(name, fn) {
@@ -148,4 +149,11 @@ test('stress defaults allow more request volume than normal defaults', function 
 
   assert.equal(stress.count > normal.count, true)
   assert.equal(stress.concurrency > normal.concurrency, true)
+})
+
+test('sla targets expose stable health check paths', function () {
+  assert.equal(slaTargets.ok.path, '/sla/ok')
+  assert.equal(slaTargets.fail.path, '/sla/fail')
+  assert.equal(slaTargets.slow.path.includes('/sla/slow'), true)
+  assert.equal(slaTargets.flaky.path.includes('/sla/flaky'), true)
 })

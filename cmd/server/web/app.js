@@ -114,6 +114,13 @@
     echo: { path: '/api/echo', method: 'POST', label: '回显负载' },
   }
 
+  const slaTargets = {
+    ok: { path: '/sla/ok', label: '正常', help: '持续返回 200，适合验证 SLA 正常采样。' },
+    fail: { path: '/sla/fail', label: '失败', help: '持续返回 500，适合验证失败次数和最近状态。' },
+    slow: { path: '/sla/slow?ms=3500', label: '超时', help: '默认延迟 3.5 秒，适合验证插件 3 秒超时策略。' },
+    flaky: { path: '/sla/flaky?errorRate=30', label: '波动', help: '按 30% 概率返回 500，适合验证 SLA 低于 99% 的展示。' },
+  }
+
   const mixedRoutes = [
     { path: '/api/ping', method: 'GET', label: '/api/ping' },
     { path: '/api/random', method: 'GET', label: '/api/random' },
@@ -438,10 +445,66 @@
       }[mode]
     }
 
+    function absoluteURL(path) {
+      return `${window.location.origin}${path}`
+    }
+
+    function selectSLA(name) {
+      const target = slaTargets[name] || slaTargets.ok
+      document.querySelectorAll('.sla-tabs .tab').forEach(tab => {
+        const active = tab.dataset.sla === name
+        tab.classList.toggle('active', active)
+        tab.setAttribute('aria-selected', active ? 'true' : 'false')
+      })
+      el('slaURL').textContent = absoluteURL(target.path)
+      el('slaHelp').textContent = `${target.help} 插件固定每 10 秒检查一次，3 秒超时，200-399 视为成功。`
+    }
+
+    async function probeSLA() {
+      const url = el('slaURL').textContent
+      const started = performance.now()
+      let status = 0
+      try {
+        const response = await fetch(url)
+        status = response.status
+      } catch (error) {
+        status = 0
+      }
+      const elapsed = Math.round(performance.now() - started)
+      state.rows.unshift({
+        index: state.rows.length + 1,
+        method: 'GET',
+        path: url,
+        status,
+        clientMs: elapsed,
+        serverDelay: 0,
+        routeLabel: 'SLA',
+      })
+      state.rows = state.rows.slice(0, 120)
+      render()
+    }
+
     document.querySelectorAll('.tab').forEach(button => {
       button.addEventListener('click', () => {
+        if (button.dataset.sla) return
         applyConfig(getModeDefaults(button.dataset.mode))
       })
+    })
+
+    document.querySelectorAll('.sla-tabs .tab').forEach(button => {
+      button.addEventListener('click', () => {
+        selectSLA(button.dataset.sla)
+      })
+    })
+
+    el('slaProbeBtn').addEventListener('click', probeSLA)
+
+    el('copySlaBtn').addEventListener('click', async () => {
+      const text = el('slaURL').textContent
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text)
+      }
+      el('slaHelp').textContent = `已复制 ${text}。将其填入网关监测应用 SLA 配置即可联动采样。`
     })
 
     el('target').addEventListener('change', event => {
@@ -474,6 +537,7 @@
     })
 
     applyConfig(getModeDefaults('normal'))
+    selectSLA('ok')
     render()
   }
 
@@ -483,6 +547,7 @@
     getModeDefaults,
     mixedRoutes,
     routeTargets,
+    slaTargets,
     progressPercent,
     scenarios,
     selectRouteForRequest,

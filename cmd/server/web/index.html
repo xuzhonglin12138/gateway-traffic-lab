@@ -99,6 +99,27 @@
             <button id="singleBtn" class="primary" type="submit">发送当前路由</button>
             <button id="mixedBtn" class="secondary" type="button">混合发送多路由</button>
           </form>
+
+          <div class="section-head compact">
+            <h2>SLA 联动</h2>
+            <button id="slaProbeBtn" class="ghost" type="button">探测</button>
+          </div>
+
+          <div class="tabs sla-tabs" role="tablist" aria-label="SLA 联动场景">
+            <button class="tab active" data-sla="ok" type="button" role="tab" aria-selected="true">正常</button>
+            <button class="tab" data-sla="fail" type="button" role="tab" aria-selected="false">失败</button>
+            <button class="tab" data-sla="slow" type="button" role="tab" aria-selected="false">超时</button>
+            <button class="tab" data-sla="flaky" type="button" role="tab" aria-selected="false">波动</button>
+          </div>
+
+          <div class="sla-box">
+            <div>
+              <small>健康检查 URL</small>
+              <code id="slaURL">/sla/ok</code>
+            </div>
+            <button id="copySlaBtn" class="secondary" type="button">复制</button>
+          </div>
+          <p class="mode-help" id="slaHelp">将这个 URL 填入网关监测应用 SLA 配置，可验证 99% 可用性链路。</p>
         </div>
 
         <div class="panel results">

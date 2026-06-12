@@ -24,6 +24,7 @@ func main() {
 	mux := http.NewServeMux()
 	trafficHandler := traffic.NewHandler()
 	mux.Handle("/api/", trafficHandler)
+	mux.Handle("/sla/", trafficHandler)
 	mux.Handle("/healthz", trafficHandler)
 	mux.Handle("/", staticHandler())
 
